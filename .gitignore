@@ -1,0 +1,17 @@
+# Helm packages
+*.tgz
+charts/
+
+# Kserve repo (cloned for local generation)
+kserve/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
