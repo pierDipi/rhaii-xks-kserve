@@ -5,10 +5,11 @@
 #   ./generate-chart.sh --overlay PATH [OPTIONS]
 #
 # Options:
-#   --overlay PATH      Path to Kustomize overlay (required)
-#   --tag TAG           Image tag for quay.io replacements (default: 3.4.0-ea.1)
-#   --branch BRANCH     RHOAI-Build-Config branch for image mappings (default: rhoai-3.4)
-#   --help              Show this help message
+#   --overlay PATH              Path to Kustomize overlay (required)
+#   --tag TAG                   Image tag for quay.io replacements (default: 3.4.0-ea.1)
+#   --branch BRANCH             RHOAI-Build-Config branch for image mappings (default: rhoai-3.4)
+#   --skip-image-replacement    Skip image replacement (use original images from overlay)
+#   --help                      Show this help message
 #
 # quay.io images are replaced with registry.redhat.io equivalents using the specified tag.
 # registry.redhat.io images are replaced with exact references (SHA digests) from the CSV.
@@ -23,6 +24,7 @@ FILES_DIR="${CHART_DIR}/files"
 TAG="3.4.0-ea.1"
 BRANCH="rhoai-3.4"
 KUSTOMIZE_OVERLAY=""
+SKIP_IMAGE_REPLACEMENT="false"
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
@@ -39,8 +41,12 @@ while [[ $# -gt 0 ]]; do
             BRANCH="$2"
             shift 2
             ;;
+        --skip-image-replacement)
+            SKIP_IMAGE_REPLACEMENT="true"
+            shift
+            ;;
         --help)
-            head -15 "$0" | tail -13
+            head -16 "$0" | tail -14
             exit 0
             ;;
         *)
@@ -66,12 +72,30 @@ CSV_URL="https://raw.githubusercontent.com/red-hat-data-services/RHOAI-Build-Con
 
 echo "Generating chart..."
 echo "  Overlay: ${KUSTOMIZE_OVERLAY}"
-echo "  Tag (for quay.io): ${TAG}"
-echo "  Branch: ${BRANCH}"
+echo "  Skip image replacement: ${SKIP_IMAGE_REPLACEMENT}"
+if [[ "${SKIP_IMAGE_REPLACEMENT}" == "false" ]]; then
+    echo "  Tag (for quay.io): ${TAG}"
+    echo "  Branch: ${BRANCH}"
+fi
 echo ""
 
 # Ensure files directory exists
 mkdir -p "${FILES_DIR}"
+
+# Build Kustomize overlay
+echo "Building Kustomize overlay..."
+kustomize build "${KUSTOMIZE_OVERLAY}" > "${FILES_DIR}/resources.yaml" 2>/dev/null
+
+if [[ "${SKIP_IMAGE_REPLACEMENT}" == "true" ]]; then
+    echo ""
+    echo "Skipping image replacement (--skip-image-replacement flag set)"
+    echo ""
+    echo "Final images:"
+    grep -oE '(quay\.io|ghcr\.io|registry\.redhat\.io|docker\.io)[^"'\''[:space:]]+' "${FILES_DIR}/resources.yaml" | sort -u
+    echo ""
+    echo "Chart generated successfully at: ${CHART_DIR}"
+    exit 0
+fi
 
 # Step 1: Fetch CSV and extract image mappings
 echo "Fetching image mappings from RHOAI-Build-Config (${BRANCH})..."
@@ -97,11 +121,7 @@ done < <(echo "${CSV_CONTENT}" | grep -oE 'registry\.redhat\.io/[^@"[:space:]]+@
 
 echo "  Found ${#IMAGE_MAP[@]} image mappings"
 
-# Step 2: Build Kustomize overlay
-echo "Building Kustomize overlay..."
-kustomize build "${KUSTOMIZE_OVERLAY}" > "${FILES_DIR}/resources.yaml" 2>/dev/null
-
-# Step 3: Replace quay.io/opendatahub images with registry.redhat.io + TAG
+# Step 2: Replace quay.io/opendatahub images with registry.redhat.io + TAG
 echo "Replacing quay.io images (using tag: ${TAG})..."
 
 QUAY_IMAGES=$(grep -oE 'quay\.io/opendatahub/[^@:"'\''[:space:]]+' "${FILES_DIR}/resources.yaml" | sort -u)
@@ -129,7 +149,7 @@ for quay_repo in ${QUAY_IMAGES}; do
     fi
 done
 
-# Step 4: Replace registry.redhat.io images with exact CSV versions (SHA)
+# Step 3: Replace registry.redhat.io images with exact CSV versions (SHA)
 echo "Replacing registry.redhat.io images (using SHA from CSV)..."
 
 RH_IMAGES=$(grep -oE 'registry\.redhat\.io/[^@:"'\''[:space:]]+' "${FILES_DIR}/resources.yaml" | sort -u)
@@ -151,7 +171,7 @@ for rh_repo in ${RH_IMAGES}; do
     fi
 done
 
-# Step 5: Verify all images are from registry.redhat.io
+# Step 4: Verify all images are from registry.redhat.io
 echo ""
 echo "Final images:"
 ALL_IMAGES=$(grep -oE '(quay\.io|ghcr\.io|registry\.redhat\.io|docker\.io)[^"'\''[:space:]]+' "${FILES_DIR}/resources.yaml" | sort -u)
