@@ -107,11 +107,27 @@ for crd in "${CRD_FILES[@]}"; do
     fi
 done
 
-# Build Kustomize overlay and filter out CRDs (they're in crds/ directory)
+# Build Kustomize overlay
 echo "Building Kustomize overlay..."
-kustomize build "${KUSTOMIZE_OVERLAY}" 2>/dev/null | \
-    yq eval 'select(.kind != "CustomResourceDefinition")' - > "${FILES_DIR}/resources.yaml"
-echo "  Filtered out CRDs from resources.yaml"
+TEMP_BUILD=$(mktemp)
+kustomize build "${KUSTOMIZE_OVERLAY}" > "${TEMP_BUILD}" 2>/dev/null
+
+# Filter out CRDs (they're in crds/ directory)
+echo "Filtering resources..."
+yq eval 'select(.kind != "CustomResourceDefinition")' "${TEMP_BUILD}" > "${FILES_DIR}/resources-all.yaml"
+echo "  Filtered out CRDs"
+
+# Extract webhook configurations to separate file (applied after deployment is ready via Helm hooks)
+yq eval 'select(.kind == "ValidatingWebhookConfiguration" or .kind == "MutatingWebhookConfiguration")' \
+    "${FILES_DIR}/resources-all.yaml" > "${FILES_DIR}/webhooks.yaml"
+WEBHOOK_COUNT=$(grep -cE "^kind: (Validating|Mutating)WebhookConfiguration" "${FILES_DIR}/webhooks.yaml" 2>/dev/null || echo 0)
+echo "  Extracted ${WEBHOOK_COUNT} webhook configurations"
+
+# Main resources without webhooks
+yq eval 'select(.kind != "ValidatingWebhookConfiguration" and .kind != "MutatingWebhookConfiguration")' \
+    "${FILES_DIR}/resources-all.yaml" > "${FILES_DIR}/resources.yaml"
+
+rm -f "${TEMP_BUILD}" "${FILES_DIR}/resources-all.yaml"
 
 if [[ "${SKIP_IMAGE_REPLACEMENT}" == "true" ]]; then
     echo ""

@@ -73,7 +73,7 @@ jobs:
       - name: Check for changes
         id: changes
         run: |
-          if git diff --quiet files/resources.yaml Chart.yaml; then
+          if git diff --quiet files/ crds/ Chart.yaml; then
             echo "changed=false" >> $GITHUB_OUTPUT
           else
             echo "changed=true" >> $GITHUB_OUTPUT
