@@ -8,6 +8,7 @@ on:
       - 'files/**'
       - 'templates/**'
       - 'values.yaml'
+      - '.github/workflows/release.yaml'
 
 permissions: {}
 
@@ -53,11 +54,15 @@ jobs:
 
       - name: Login to GHCR
         uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3.4.0
+        env:
+          ACTOR: ${{ github.actor }}
         with:
           registry: ghcr.io
-          username: ${{ github.actor }}
+          username: ${{ env.ACTOR }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push to OCI registry
+        env:
+          OWNER: ${{ github.repository_owner }}
         run: |
-          helm push *.tgz oci://ghcr.io/${{ github.repository_owner }}/charts
+          helm push *.tgz "oci://ghcr.io/${OWNER,,}"
