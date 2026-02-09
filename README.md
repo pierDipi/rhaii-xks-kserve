@@ -7,12 +7,76 @@ Helm chart for deploying KServe on xKS for Red Hat AI Inference.
 This chart is auto-generated from the [KServe](https://github.com/red-hat-data-services/kserve) Kustomize overlays with
 RHOAI image replacements. All container images are sourced from `registry.redhat.io`.
 
+## Prerequisites
+
+* Install cert-manager in the `cert-manager` namespace (if not already installed)
+
+### cert-manager PKI Setup
+
+This chart requires cert-manager to be installed and a PKI chain to be configured. The chart expects
+a `ClusterIssuer` named `opendatahub-ca-issuer` to issue webhook certificates.
+
+Set up the PKI chain by applying the following resources:
+
+```bash
+# This is the root ClusterIssuer to bootstrap the OpenDataHub CA.
+# It can be replaced with a different ClusterIssuer (e.g., Vault)
+# for production deployments.
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: opendatahub-selfsigned-issuer
+spec:
+  selfSigned: { }
+---
+# This is the ClusterIssuer that OpenDataHub components should use to issue certificates.
+# It uses the CA certificate created by ca-certificate.yaml.
+# Being cluster-scoped, any namespace can request certificates from this issuer.
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: opendatahub-ca-issuer # must be `opendatahub-ca-issuer`
+spec:
+  ca:
+    secretName: opendatahub-ca
+---
+# This is the OpenDataHub CA certificate.
+# It is issued by the selfsigned ClusterIssuer and used to sign workload certificates.
+# The secret created (opendatahub-ca) contains tls.crt and tls.key.
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: opendatahub-ca
+  namespace: cert-manager
+spec:
+  secretName: opendatahub-ca # must be `opendatahub-ca`
+  isCA: true
+  commonName: opendatahub-ca
+  duration: 87600h  # 10 years
+  renewBefore: 2160h  # 90 days
+  privateKey:
+    algorithm: RSA
+    size: 4096
+  issuerRef:
+    name: opendatahub-selfsigned-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
+```
+
+This creates:
+
+1. **opendatahub-selfsigned-issuer** (ClusterIssuer) - Bootstrap issuer for the CA
+2. **opendatahub-ca** (Certificate in cert-manager namespace) - The CA certificate
+3. **opendatahub-ca-issuer** (ClusterIssuer) - Issuer for workload certificates
+
+For production deployments, replace the self-signed issuer with a proper CA (e.g., Vault, external PKI).
+
 ## Installation
 
 ### From OCI Registry
 
 ```bash
-helm install kserve-xks oci://ghcr.io/<owner>/kserve-rhaii-xks \
+helm install rhaii-xks-kserve oci://ghcr.io/<owner>/kserve-rhaii-xks \
   --namespace opendatahub \
   --create-namespace
 ```
@@ -93,10 +157,13 @@ Validates the chart:
 ├── Chart.yaml              # Chart metadata
 ├── values.yaml             # (empty - static chart)
 ├── generate-chart.sh       # Regeneration script
+├── crds/                   # CRDs installed first by Helm
 ├── files/
-│   └── resources.yaml      # Pre-rendered Kustomize manifests
+│   ├── resources.yaml      # Pre-rendered Kustomize manifests
+│   └── webhooks.yaml       # Webhook configurations (raw)
 └── templates/
-    └── resources.yaml      # Includes files via .Files.Get
+    ├── resources.yaml      # Includes files via .Files.Get
+    └── webhooks.yaml       # Webhooks with Helm hook annotations
 ```
 
 ## Notes
