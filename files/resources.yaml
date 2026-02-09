@@ -41048,7 +41048,7 @@ data:
     without isvcs\n     \"disableVolumeManagement\": false\n   }"
   agent: |-
     {
-        "image" : "registry.redhat.io/rhoai/odh-kserve-agent-rhel9@sha256:d85e7df7a10f8e68d18f98d776ffb12bae2eab06698d260b07921ebfcba32424",
+        "image" : "quay.io/opendatahub/kserve-agent:v0.15-latest",
         "memoryRequest": "100Mi",
         "memoryLimit": "1Gi",
         "cpuRequest": "100m",
@@ -41056,7 +41056,7 @@ data:
     }
   batcher: |-
     {
-        "image" : "registry.redhat.io/rhoai/odh-kserve-agent-rhel9@sha256:d85e7df7a10f8e68d18f98d776ffb12bae2eab06698d260b07921ebfcba32424",
+        "image" : "quay.io/opendatahub/kserve-agent:v0.15-latest",
         "memoryRequest": "1Gi",
         "memoryLimit": "1Gi",
         "cpuRequest": "1",
@@ -41124,7 +41124,7 @@ data:
     }
   logger: |-
     {
-        "image" : "registry.redhat.io/rhoai/odh-kserve-agent-rhel9@sha256:d85e7df7a10f8e68d18f98d776ffb12bae2eab06698d260b07921ebfcba32424",
+        "image" : "quay.io/opendatahub/kserve-agent:v0.15-latest",
         "memoryRequest": "100Mi",
         "memoryLimit": "1Gi",
         "cpuRequest": "100m",
@@ -41138,7 +41138,7 @@ data:
     }
   oauthProxy: |-
     {
-      "image" : "registry.redhat.io/rhoai/odh-kube-auth-proxy-rhel9@sha256:74da2b12467acb2617c88fd59dc11529452f8fc5cff2241576e1e0c445182903",
+      "image" : "quay.io/opendatahub/odh-kube-auth-proxy@sha256:dcb09fbabd8811f0956ef612a0c9ddd5236804b9bd6548a0647d2b531c9d01b3",
       "memoryRequest": "64Mi",
       "memoryLimit": "128Mi",
       "cpuRequest": "100m",
@@ -41152,7 +41152,7 @@ data:
     }
   router: |-
     {
-        "image" : "registry.redhat.io/rhoai/odh-kserve-router-rhel9@sha256:748be3768dccfb932ea3d8b9e71afc85a0c8d90fa8dbacde2a70694ba0577d48",
+        "image" : "quay.io/opendatahub/kserve-router:v0.15-latest",
         "memoryRequest": "100Mi",
         "memoryLimit": "1Gi",
         "cpuRequest": "100m",
@@ -41173,7 +41173,7 @@ data:
     }
   storageInitializer: |-
     {
-        "image" : "registry.redhat.io/rhoai/odh-kserve-storage-initializer-rhel9@sha256:c14f41922a7cfc6efa56cb29bea79c930010833f15be905b14034c7d1e4070df",
+        "image" : "quay.io/opendatahub/kserve-storage-initializer:v0.15-latest",
         "memoryRequest": "100Mi",
         "memoryLimit": "24Gi",
         "cpuRequest": "100m",
@@ -41192,16 +41192,16 @@ metadata:
 ---
 apiVersion: v1
 data:
-  kserve-agent: registry.redhat.io/rhoai/odh-kserve-agent-rhel9@sha256:d85e7df7a10f8e68d18f98d776ffb12bae2eab06698d260b07921ebfcba32424
-  kserve-controller: registry.redhat.io/rhoai/odh-kserve-controller-rhel9@sha256:1f78dfa105651a202c6da9664f8dd82a06c41cef49052edf7fd1b603d981117d
-  kserve-llm-d: registry.redhat.io/rhaiis/vllm-cuda-rhel9@sha256:094db84a1da5e8a575d0c9eade114fa30f4a2061064a338e3e032f3578f8082a
-  kserve-llm-d-amd-rocm: registry.redhat.io/rhaiis/vllm-rocm-rhel9@sha256:bc99ee0a29f72ff34f930c9436d41feda2ab84bb5a53f7e76a9b8dbf8c776c44
-  kserve-llm-d-inference-scheduler: registry.redhat.io/rhoai/odh-llm-d-inference-scheduler-rhel9@sha256:905b704f7d9c68af1827bba7c6eefec22d269a9084791952221eb1a1d10e32c7
-  kserve-llm-d-nvidia-cuda: registry.redhat.io/rhaiis/vllm-cuda-rhel9@sha256:094db84a1da5e8a575d0c9eade114fa30f4a2061064a338e3e032f3578f8082a
-  kserve-llm-d-routing-sidecar: registry.redhat.io/rhoai/odh-llm-d-routing-sidecar-rhel9@sha256:7f93742da18df2ce220cd8d6a0310c18af6fe04905c83f23d022e065716ebd88
-  kserve-router: registry.redhat.io/rhoai/odh-kserve-router-rhel9@sha256:748be3768dccfb932ea3d8b9e71afc85a0c8d90fa8dbacde2a70694ba0577d48
-  kserve-storage-initializer: registry.redhat.io/rhoai/odh-kserve-storage-initializer-rhel9@sha256:c14f41922a7cfc6efa56cb29bea79c930010833f15be905b14034c7d1e4070df
-  kube-rbac-proxy: registry.redhat.io/rhoai/odh-kube-auth-proxy-rhel9@sha256:74da2b12467acb2617c88fd59dc11529452f8fc5cff2241576e1e0c445182903
+  kserve-agent: quay.io/opendatahub/kserve-agent:v0.15-latest
+  kserve-controller: quay.io/opendatahub/kserve-controller:v0.15-latest
+  kserve-llm-d: registry.redhat.io/rhaiis/vllm-cuda-rhel9@sha256:fc68d623d1bfc36c8cb2fe4a71f19c8578cfb420ce8ce07b20a02c1ee0be0cf3
+  kserve-llm-d-amd-rocm: registry.redhat.io/rhaiis/vllm-rocm-rhel9@sha256:d9a48add238cc095fa43eeee17c8c4d104de60c4dc623e0bc7f8c4b53b2b2e97
+  kserve-llm-d-inference-scheduler: quay.io/opendatahub/llm-d-inference-scheduler:release-v0.4
+  kserve-llm-d-nvidia-cuda: registry.redhat.io/rhaiis/vllm-cuda-rhel9@sha256:fc68d623d1bfc36c8cb2fe4a71f19c8578cfb420ce8ce07b20a02c1ee0be0cf3
+  kserve-llm-d-routing-sidecar: quay.io/opendatahub/llm-d-routing-sidecar:release-v0.4
+  kserve-router: quay.io/opendatahub/kserve-router:v0.15-latest
+  kserve-storage-initializer: quay.io/opendatahub/kserve-storage-initializer:v0.15-latest
+  kube-rbac-proxy: quay.io/opendatahub/odh-kube-auth-proxy@sha256:dcb09fbabd8811f0956ef612a0c9ddd5236804b9bd6548a0647d2b531c9d01b3
 kind: ConfigMap
 metadata:
   name: kserve-parameters
@@ -41344,7 +41344,7 @@ spec:
               fieldPath: metadata.namespace
         - name: SECRET_NAME
           value: kserve-webhook-server-cert
-        image: registry.redhat.io/rhoai/odh-kserve-controller-rhel9@sha256:1f78dfa105651a202c6da9664f8dd82a06c41cef49052edf7fd1b603d981117d
+        image: quay.io/opendatahub/kserve-controller:v0.15-latest
         imagePullPolicy: Always
         livenessProbe:
           failureThreshold: 5
@@ -41519,7 +41519,7 @@ spec:
         value: INFO
       - name: HF_HUB_CACHE
         value: /models
-      image: registry.redhat.io/rhaiis/vllm-cuda-rhel9@sha256:094db84a1da5e8a575d0c9eade114fa30f4a2061064a338e3e032f3578f8082a
+      image: registry.redhat.io/rhaiis/vllm-cuda-rhel9@sha256:fc68d623d1bfc36c8cb2fe4a71f19c8578cfb420ce8ce07b20a02c1ee0be0cf3
       imagePullPolicy: IfNotPresent
       livenessProbe:
         failureThreshold: 3
@@ -41582,7 +41582,7 @@ spec:
             fieldPath: metadata.namespace
       - name: SSL_CERT_DIR
         value: /var/run/kserve/tls:/var/run/secrets/kubernetes.io/serviceaccount:/etc/pki/tls/certs
-      image: registry.redhat.io/rhoai/odh-llm-d-routing-sidecar-rhel9@sha256:7f93742da18df2ce220cd8d6a0310c18af6fe04905c83f23d022e065716ebd88
+      image: quay.io/opendatahub/llm-d-routing-sidecar:release-v0.4
       imagePullPolicy: IfNotPresent
       livenessProbe:
         failureThreshold: 3
@@ -41742,7 +41742,7 @@ spec:
         value: INFO
       - name: HF_HUB_CACHE
         value: /models
-      image: registry.redhat.io/rhaiis/vllm-cuda-rhel9@sha256:094db84a1da5e8a575d0c9eade114fa30f4a2061064a338e3e032f3578f8082a
+      image: registry.redhat.io/rhaiis/vllm-cuda-rhel9@sha256:fc68d623d1bfc36c8cb2fe4a71f19c8578cfb420ce8ce07b20a02c1ee0be0cf3
       imagePullPolicy: IfNotPresent
       livenessProbe:
         failureThreshold: 3
@@ -41809,7 +41809,7 @@ spec:
             fieldPath: metadata.namespace
       - name: SSL_CERT_DIR
         value: /var/run/kserve/tls:/var/run/secrets/kubernetes.io/serviceaccount:/etc/pki/tls/certs
-      image: registry.redhat.io/rhoai/odh-llm-d-routing-sidecar-rhel9@sha256:7f93742da18df2ce220cd8d6a0310c18af6fe04905c83f23d022e065716ebd88
+      image: quay.io/opendatahub/llm-d-routing-sidecar:release-v0.4
       imagePullPolicy: IfNotPresent
       livenessProbe:
         failureThreshold: 3
@@ -41964,7 +41964,7 @@ spec:
         value: /models
       - name: VLLM_RANDOMIZE_DP_DUMMY_INPUTS
         value: "1"
-      image: registry.redhat.io/rhaiis/vllm-cuda-rhel9@sha256:094db84a1da5e8a575d0c9eade114fa30f4a2061064a338e3e032f3578f8082a
+      image: registry.redhat.io/rhaiis/vllm-cuda-rhel9@sha256:fc68d623d1bfc36c8cb2fe4a71f19c8578cfb420ce8ce07b20a02c1ee0be0cf3
       imagePullPolicy: IfNotPresent
       name: main
       ports:
@@ -42102,7 +42102,7 @@ spec:
           value: INFO
         - name: HF_HUB_CACHE
           value: /models
-        image: registry.redhat.io/rhaiis/vllm-cuda-rhel9@sha256:094db84a1da5e8a575d0c9eade114fa30f4a2061064a338e3e032f3578f8082a
+        image: registry.redhat.io/rhaiis/vllm-cuda-rhel9@sha256:fc68d623d1bfc36c8cb2fe4a71f19c8578cfb420ce8ce07b20a02c1ee0be0cf3
         imagePullPolicy: IfNotPresent
         livenessProbe:
           failureThreshold: 3
@@ -42272,7 +42272,7 @@ spec:
           value: INFO
         - name: HF_HUB_CACHE
           value: /models
-        image: registry.redhat.io/rhaiis/vllm-cuda-rhel9@sha256:094db84a1da5e8a575d0c9eade114fa30f4a2061064a338e3e032f3578f8082a
+        image: registry.redhat.io/rhaiis/vllm-cuda-rhel9@sha256:fc68d623d1bfc36c8cb2fe4a71f19c8578cfb420ce8ce07b20a02c1ee0be0cf3
         imagePullPolicy: IfNotPresent
         livenessProbe:
           failureThreshold: 3
@@ -42436,7 +42436,7 @@ spec:
           value: INFO
         - name: HF_HUB_CACHE
           value: /models
-        image: registry.redhat.io/rhaiis/vllm-cuda-rhel9@sha256:094db84a1da5e8a575d0c9eade114fa30f4a2061064a338e3e032f3578f8082a
+        image: registry.redhat.io/rhaiis/vllm-cuda-rhel9@sha256:fc68d623d1bfc36c8cb2fe4a71f19c8578cfb420ce8ce07b20a02c1ee0be0cf3
         imagePullPolicy: IfNotPresent
         name: main
         ports:
@@ -42597,7 +42597,7 @@ spec:
           env:
           - name: SSL_CERT_DIR
             value: /var/run/kserve/tls:/var/run/secrets/kubernetes.io/serviceaccount:/etc/pki/tls/certs
-          image: registry.redhat.io/rhoai/odh-llm-d-inference-scheduler-rhel9@sha256:905b704f7d9c68af1827bba7c6eefec22d269a9084791952221eb1a1d10e32c7
+          image: quay.io/opendatahub/llm-d-inference-scheduler:release-v0.4
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -42751,7 +42751,7 @@ spec:
         value: INFO
       - name: HF_HUB_CACHE
         value: /models
-      image: registry.redhat.io/rhaiis/vllm-cuda-rhel9@sha256:094db84a1da5e8a575d0c9eade114fa30f4a2061064a338e3e032f3578f8082a
+      image: registry.redhat.io/rhaiis/vllm-cuda-rhel9@sha256:fc68d623d1bfc36c8cb2fe4a71f19c8578cfb420ce8ce07b20a02c1ee0be0cf3
       imagePullPolicy: IfNotPresent
       livenessProbe:
         failureThreshold: 3
@@ -42822,7 +42822,7 @@ metadata:
 spec:
   template:
     containers:
-    - image: registry.redhat.io/rhaiis/vllm-rocm-rhel9@sha256:bc99ee0a29f72ff34f930c9436d41feda2ab84bb5a53f7e76a9b8dbf8c776c44
+    - image: registry.redhat.io/rhaiis/vllm-rocm-rhel9@sha256:d9a48add238cc095fa43eeee17c8c4d104de60c4dc623e0bc7f8c4b53b2b2e97
       name: main
 ---
 apiVersion: serving.kserve.io/v1alpha1
@@ -42932,7 +42932,7 @@ spec:
         value: INFO
       - name: HF_HUB_CACHE
         value: /models
-      image: registry.redhat.io/rhaiis/vllm-cuda-rhel9@sha256:094db84a1da5e8a575d0c9eade114fa30f4a2061064a338e3e032f3578f8082a
+      image: registry.redhat.io/rhaiis/vllm-cuda-rhel9@sha256:fc68d623d1bfc36c8cb2fe4a71f19c8578cfb420ce8ce07b20a02c1ee0be0cf3
       imagePullPolicy: IfNotPresent
       livenessProbe:
         failureThreshold: 3
@@ -43094,7 +43094,7 @@ spec:
         value: INFO
       - name: HF_HUB_CACHE
         value: /models
-      image: registry.redhat.io/rhaiis/vllm-cuda-rhel9@sha256:094db84a1da5e8a575d0c9eade114fa30f4a2061064a338e3e032f3578f8082a
+      image: registry.redhat.io/rhaiis/vllm-cuda-rhel9@sha256:fc68d623d1bfc36c8cb2fe4a71f19c8578cfb420ce8ce07b20a02c1ee0be0cf3
       imagePullPolicy: IfNotPresent
       name: main
       ports:

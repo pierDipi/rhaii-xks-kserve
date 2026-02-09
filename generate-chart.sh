@@ -79,8 +79,33 @@ if [[ "${SKIP_IMAGE_REPLACEMENT}" == "false" ]]; then
 fi
 echo ""
 
-# Ensure files directory exists
+rm -rf "${FILES_DIR}"
+rm -rf "${CHART_DIR}/crds"
+
+# Ensure directories exist
 mkdir -p "${FILES_DIR}"
+mkdir -p "${CHART_DIR}/crds"
+
+# Derive kserve repo root from overlay path
+# e.g., /path/to/kserve/config/overlays/odh-xks -> /path/to/kserve
+KSERVE_ROOT=$(dirname "$(dirname "$(dirname "${KUSTOMIZE_OVERLAY}")")")
+
+# Copy LLM CRDs to crds/ directory (Helm installs these first automatically)
+echo "Copying CRDs to crds/ directory..."
+CRD_FILES=(
+    "serving.kserve.io_llminferenceservices.yaml"
+    "serving.kserve.io_llminferenceserviceconfigs.yaml"
+)
+
+for crd in "${CRD_FILES[@]}"; do
+    src="${KSERVE_ROOT}/config/crd/full/${crd}"
+    if [[ -f "${src}" ]]; then
+        cp "${src}" "${CHART_DIR}/crds/"
+        echo "  Copied ${crd}"
+    else
+        echo "  Warning: CRD not found: ${src}"
+    fi
+done
 
 # Build Kustomize overlay
 echo "Building Kustomize overlay..."

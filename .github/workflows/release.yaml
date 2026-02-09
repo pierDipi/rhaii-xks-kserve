@@ -5,6 +5,7 @@ on:
     branches: [main, rhoai-*, master]
     paths:
       - 'Chart.yaml'
+      - 'crds/**'
       - 'files/**'
       - 'templates/**'
       - 'values.yaml'
