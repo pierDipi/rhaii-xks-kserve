@@ -107,9 +107,11 @@ for crd in "${CRD_FILES[@]}"; do
     fi
 done
 
-# Build Kustomize overlay
+# Build Kustomize overlay and filter out CRDs (they're in crds/ directory)
 echo "Building Kustomize overlay..."
-kustomize build "${KUSTOMIZE_OVERLAY}" > "${FILES_DIR}/resources.yaml" 2>/dev/null
+kustomize build "${KUSTOMIZE_OVERLAY}" 2>/dev/null | \
+    yq eval 'select(.kind != "CustomResourceDefinition")' - > "${FILES_DIR}/resources.yaml"
+echo "  Filtered out CRDs from resources.yaml"
 
 if [[ "${SKIP_IMAGE_REPLACEMENT}" == "true" ]]; then
     echo ""
