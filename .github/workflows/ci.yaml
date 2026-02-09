@@ -39,7 +39,7 @@ jobs:
 
       - name: Verify webhook hook annotations
         run: |
-          WEBHOOKS=$(helm template test . | grep -A5 'kind: ValidatingWebhookConfiguration\|kind: MutatingWebhookConfiguration' || true)
+          WEBHOOKS=$(helm template test . | grep -A20 'kind: ValidatingWebhookConfiguration\|kind: MutatingWebhookConfiguration' || true)
           if [[ -n "${WEBHOOKS}" ]]; then
             if ! echo "${WEBHOOKS}" | grep -q 'helm.sh/hook:'; then
               echo "ERROR: Webhook configurations are missing Helm hook annotations"
