@@ -12,7 +12,7 @@ RHOAI image replacements. All container images are sourced from `registry.redhat
 ### From OCI Registry
 
 ```bash
-helm install kserve-xks oci://ghcr.io/<owner>/charts/kserve-rhaii-xks \
+helm install kserve-xks oci://ghcr.io/<owner>/kserve-rhaii-xks \
   --namespace opendatahub \
   --create-namespace
 ```
