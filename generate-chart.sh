@@ -93,17 +93,19 @@ KSERVE_ROOT=$(dirname "$(dirname "$(dirname "${KUSTOMIZE_OVERLAY}")")")
 # Copy LLM CRDs to crds/ directory (Helm installs these first automatically)
 echo "Copying CRDs to crds/ directory..."
 CRD_FILES=(
-    "serving.kserve.io_llminferenceservices.yaml"
-    "serving.kserve.io_llminferenceserviceconfigs.yaml"
+    "config/crd/full/serving.kserve.io_llminferenceservices.yaml"
+    "config/crd/full/serving.kserve.io_llminferenceserviceconfigs.yaml"
+    "config/crd/external/gateway-inference-extension/gateway-inference-extension.yaml"
 )
 
 for crd in "${CRD_FILES[@]}"; do
-    src="${KSERVE_ROOT}/config/crd/full/${crd}"
+    src="${KSERVE_ROOT}/${crd}"
     if [[ -f "${src}" ]]; then
         cp "${src}" "${CHART_DIR}/crds/"
         echo "  Copied ${crd}"
     else
-        echo "  Warning: CRD not found: ${src}"
+        echo "  CRD not found: ${src}"
+        exit 1
     fi
 done
 
