@@ -159,7 +159,7 @@ jobs:
               exit 1
             fi
 
-            TARGET="${GHCR_PREFIX}/${IMAGE_NAME}@${DIGEST}"
+            TARGET="${GHCR_PREFIX}/${IMAGE_NAME}:${KSERVE_SHA}@${DIGEST}"
 
             echo "Mirroring ${REF} -> ${TARGET}"
 
