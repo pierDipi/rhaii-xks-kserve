@@ -98,6 +98,13 @@ jobs:
             --overlay ./kserve/config/overlays/odh-xks \
             --skip-image-replacement
 
+      - name: Get kserve commit SHA
+        id: kserve
+        run: |
+          KSERVE_SHA=$(git -C kserve rev-parse --short HEAD)
+          echo "sha=${KSERVE_SHA}" >> $GITHUB_OUTPUT
+          echo "Kserve commit: ${KSERVE_SHA}"
+
       - name: Login to GHCR
         uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3.4.0
         env:
@@ -113,11 +120,11 @@ jobs:
       - name: Mirror images to GHCR
         env:
           OWNER: ${{ github.repository_owner }}
+          KSERVE_SHA: ${{ steps.kserve.outputs.sha }}
         run: |
           set -euo pipefail
 
           GHCR_PREFIX="ghcr.io/${OWNER,,}/rhaii-xks-kserve"
-          SHORT_SHA=$(git rev-parse --short HEAD)
 
           # Extract all container images from the chart (both resources and webhooks)
           IMAGES=$(grep -oE '(quay\.io|ghcr\.io|docker\.io)[^"'\''[:space:]]+' files/*.yaml | sed 's/^[^:]*://' | sort -u)
@@ -156,8 +163,8 @@ jobs:
 
             echo "Mirroring ${REF} -> ${TARGET}"
 
-            # Copy image to GHCR using buildx imagetools (tag includes SHA for traceability)
-            docker buildx imagetools create --tag "${GHCR_PREFIX}/${IMAGE_NAME}:${SHORT_SHA}" "${REF}"
+            # Copy image to GHCR using buildx imagetools (tag is kserve commit SHA for traceability)
+            docker buildx imagetools create --tag "${GHCR_PREFIX}/${IMAGE_NAME}:${KSERVE_SHA}" "${REF}"
 
             # Replace in chart files (escape dots for sed)
             IMAGE_ESCAPED="${IMAGE//./\\.}"
