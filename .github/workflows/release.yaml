@@ -107,6 +107,9 @@ jobs:
           username: ${{ env.ACTOR }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Clean up kserve checkout
+        run: rm -rf kserve
+
       - name: Mirror images to GHCR
         env:
           OWNER: ${{ github.repository_owner }}
@@ -114,6 +117,7 @@ jobs:
           set -euo pipefail
 
           GHCR_PREFIX="ghcr.io/${OWNER,,}/rhaii-xks-kserve"
+          SHORT_SHA=$(git rev-parse --short HEAD)
 
           # Extract all container images from the chart (both resources and webhooks)
           IMAGES=$(grep -oE '(quay\.io|ghcr\.io|docker\.io)[^"'\''[:space:]]+' files/*.yaml | sed 's/^[^:]*://' | sort -u)
@@ -152,8 +156,8 @@ jobs:
 
             echo "Mirroring ${REF} -> ${TARGET}"
 
-            # Copy image to GHCR using buildx imagetools
-            docker buildx imagetools create --tag "${GHCR_PREFIX}/${IMAGE_NAME}:mirrored" "${REF}"
+            # Copy image to GHCR using buildx imagetools (tag includes SHA for traceability)
+            docker buildx imagetools create --tag "${GHCR_PREFIX}/${IMAGE_NAME}:${SHORT_SHA}" "${REF}"
 
             # Replace in chart files (escape dots for sed)
             IMAGE_ESCAPED="${IMAGE//./\\.}"
