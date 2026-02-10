@@ -1,0 +1,15 @@
+r# Patterns to ignore when building packages.
+.git
+.git/
+.github
+.github/
+.gitignore
+*.swp
+*.bak
+*.tmp
+*~
+
+# Development files
+generate-chart.sh
+README.md
+LICENSE
