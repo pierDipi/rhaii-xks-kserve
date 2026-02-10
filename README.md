@@ -76,7 +76,17 @@ For production deployments, replace the self-signed issuer with a proper CA (e.g
 ### From OCI Registry
 
 ```bash
-helm install rhaii-xks-kserve oci://ghcr.io/<owner>/kserve-rhaii-xks \
+# Production version (e.g., 3.4.0-ea.1+abc1234)
+helm install rhaii-xks-kserve oci://ghcr.io/<owner>/kserve-rhaii-xks:<version> \
+  --namespace opendatahub \
+  --create-namespace
+```
+
+Or use a development version (uses midstream kserve images):
+
+```bash
+# Dev version (e.g., 3.4.0-ea.1-dev+abc1234)
+helm install rhaii-xks-kserve oci://ghcr.io/<owner>/kserve-rhaii-xks:<version>-dev+<sha> \
   --namespace opendatahub \
   --create-namespace
 ```
